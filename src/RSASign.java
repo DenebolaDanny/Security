@@ -1,9 +1,11 @@
-import java.security.KeyFactory;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.Signature;
+import java.security.*;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.KeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by kevindanny on 2016/12/6.
@@ -43,6 +45,45 @@ public class RSASign {
         signature.update(data);
         return signature.verify(sign);
 
+    }
+
+    /**
+     * 取得私钥
+     * @param keyMap 密钥map
+     * @return 私钥
+     * @throws Exception
+     */
+    public static byte[] getPrivateKey(Map<String,Object> keyMap) throws Exception{
+        Key key = (Key) keyMap.get("Private Key");
+        return key.getEncoded();
+    }
+
+    /**
+     * 取得公钥
+     * @param keyMap 密钥map
+     * @return 公钥
+     * @throws Exception
+     */
+    public static byte[] getPublicKey(Map<String,Object> keyMap)throws Exception{
+        Key key = (Key) keyMap.get("Public Key");
+        return key.getEncoded();
+    }
+
+    /**
+     * 初始化密钥
+     * @return 密钥map
+     * @throws Exception
+     */
+    public static Map<String,Object> initKey() throws Exception{
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+        keyPairGenerator.initialize(512);
+        KeyPair keyPair=keyPairGenerator.generateKeyPair();
+        RSAPublicKey publicKey = (RSAPublicKey)keyPair.getPublic();
+        RSAPrivateKey privateKey = (RSAPrivateKey)keyPair.getPrivate();
+        Map<String,Object> keyMap = new HashMap<>(2);
+        keyMap.put("Public Key",publicKey);
+        keyMap.put("Private Key",privateKey);
+        return keyMap;
     }
 }
 
