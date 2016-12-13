@@ -74,7 +74,7 @@ public class RSACoder  {
      */
     public static Map<String,Object> initKey() throws Exception{
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");    //实例化秘钥对生成器
-        keyPairGenerator.initialize(512);   //秘钥对生成器初始化
+        keyPairGenerator.initialize(1024);   //秘钥对生成器初始化
         KeyPair keyPair = keyPairGenerator.generateKeyPair();   //生成秘钥对
         RSAPublicKey publicKey = (RSAPublicKey)keyPair.getPublic(); //获取公钥
         RSAPrivateKey privateKey = (RSAPrivateKey)keyPair.getPrivate(); //获取私钥

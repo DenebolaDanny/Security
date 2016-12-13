@@ -30,7 +30,7 @@ public class AESCoder {
 
     public static byte[] initKey() throws  Exception{
         KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-        keyGenerator.init(128);
+        keyGenerator.init(256); //128/192/256
         SecretKey secretKey = keyGenerator.generateKey();
         return secretKey.getEncoded();
     }

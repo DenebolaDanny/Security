@@ -76,7 +76,7 @@ public class RSASign {
      */
     public static Map<String,Object> initKey() throws Exception{
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        keyPairGenerator.initialize(512);
+        keyPairGenerator.initialize(1024);
         KeyPair keyPair=keyPairGenerator.generateKeyPair();
         RSAPublicKey publicKey = (RSAPublicKey)keyPair.getPublic();
         RSAPrivateKey privateKey = (RSAPrivateKey)keyPair.getPrivate();
