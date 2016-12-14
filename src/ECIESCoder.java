@@ -1,6 +1,8 @@
 import org.bouncycastle.jce.interfaces.ECPrivateKey;
 import org.bouncycastle.jce.interfaces.ECPublicKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 
 import javax.crypto.Cipher;
 import java.security.*;
@@ -14,7 +16,8 @@ import java.util.Map;
  */
 public class ECIESCoder {
 
-    public static Map<byte[],byte[]> map = new HashMap<>(2);
+//    public static Map<byte[],byte[]> map = new HashMap<>(2);
+public static Map<String,String> map = new HashMap<>(2);
     /**
      * 初始化密钥
      * 公私钥对存入map
@@ -23,7 +26,7 @@ public class ECIESCoder {
      * @throws Exception
      */
     @org.junit.Test
-    public static byte[] initKey() throws Exception {
+    public static String initKey() throws Exception {
         Map<byte[], byte[]> keyMap = new HashMap<byte[], byte[]>();
         byte[] publicKey = null;
         byte[] privateKey = null;
@@ -41,52 +44,54 @@ public class ECIESCoder {
         publicKey = ecPublicKey.getEncoded();
         privateKey = ecPrivateKey.getEncoded();
 
-//        System.out.println("公钥\n" + new BASE64Encoder().encode(publicKey));
-//        System.out.println("\n私钥\n" + new BASE64Encoder().encode(privateKey));
 
-        ECIESCoder.map.put(publicKey, privateKey);  //<公钥，私钥>放入秘钥池
-        return publicKey;
+        ECIESCoder.map.put(new BASE64Encoder().encodeBuffer(publicKey),new BASE64Encoder().encodeBuffer(privateKey));  //<公钥，私钥>放入秘钥池
+//        ECIESCoder.map.put("private",new BASE64Encoder().encodeBuffer(privateKey));  //<公钥，私钥>放入秘钥池
+        String pub = new BASE64Encoder().encodeBuffer(publicKey);
+        return pub;
+//        return publicKey;
     }
 
     /**
      * 用公钥加密
      *
      * @param data 待加密数据
-     * @param key  公钥
+     * @param  pubKey)  公钥
      * @return 密文字节流
      * @throws Exception
      */
-    public static byte[] encrypt(byte[] data, byte[] key) throws Exception {
+    public static String encrypt(String data, String pubKey) throws Exception {
         byte[] cipherText = null;
 //        转换公钥
+        byte[] key=new BASE64Decoder().decodeBuffer( pubKey);
         X509EncodedKeySpec spec = new X509EncodedKeySpec(key);
         KeyFactory factory = KeyFactory.getInstance("ECDH");
 //        生成公钥
         PublicKey publicKey = factory.generatePublic(spec);
-//        System.out.println("\n重新生成的公钥：\n"+ new BASE64Encoder().encode(publicKey.getEncoded()));
 //        加密
         Cipher cipher = Cipher.getInstance("ECIES", BouncyCastleProvider.PROVIDER_NAME);
         cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-        cipherText = cipher.doFinal(data);
-        return cipherText;
+        cipherText = cipher.doFinal(data.getBytes());
+        return new BASE64Encoder().encodeBuffer(cipherText);
     }
 
     /**
      * 用私钥解密
      *
-     * @param data 待解秘数据
-     * @param key  私钥
+     * @param strData 待解秘数据
+     * @param priKey  私钥
      * @return 原文字节流
      * @throws Exception
      */
-    public static byte[] decrypt(byte[] data, byte[] key) throws Exception {
+    public static byte[] decrypt(String strData, String priKey) throws Exception {
         byte[] transData = null;
+        byte[] data=new BASE64Decoder().decodeBuffer(strData);
+        byte[] key=new BASE64Decoder().decodeBuffer(priKey);
 //        转换私钥
         PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(key);
         KeyFactory factory = KeyFactory.getInstance("ECDH");
 //        生层私钥
         PrivateKey privateKey = factory.generatePrivate(spec);
-//        System.out.println("\n重新生成的私钥：\n"+ new BASE64Encoder().encode(privateKey.getEncoded()));
 //        解密
         Cipher cipher = Cipher.getInstance("ECIES", BouncyCastleProvider.PROVIDER_NAME);
         cipher.init(Cipher.DECRYPT_MODE,privateKey);

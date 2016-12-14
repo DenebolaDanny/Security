@@ -1,4 +1,6 @@
 import org.bouncycastle.jce.interfaces.ECPublicKey;
+import org.bouncycastle.util.encoders.Base64;
+import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 import java.util.Map;
@@ -78,15 +80,16 @@ public class Test {
      */
     @org.junit.Test
     public void ECIESTest()throws Exception{
-        byte[] publicKey=ECIESCoder.initKey();
-        System.out.println("公钥：\n"+ new BASE64Encoder().encode(publicKey));
         String test="一定要成功！";
-        System.out.println("原始数据：\n"+test);
-        byte[] cryptData = ECIESCoder.encrypt(test.getBytes(),publicKey);
-        System.out.println("加密数据：\n"+new BASE64Encoder().encode(cryptData));
-        byte[] privateKey=ECIESCoder.map.get(publicKey);
-        System.out.println("私钥：\n"+ new BASE64Encoder().encode(privateKey));
+
+        String publicKey=ECIESCoder.initKey();
+        String cryptData = ECIESCoder.encrypt(test,publicKey);
+        String privateKey=ECIESCoder.map.get(publicKey);
         byte[] rawData = ECIESCoder.decrypt(cryptData,privateKey);
+        System.out.println("原始数据：\n"+test);
+        System.out.println("加密数据：\n"+cryptData);
+        System.out.println("私钥：\n"+ privateKey);
+        System.out.println("公钥：\n"+ publicKey);
         System.out.println("解密后数据：\n"+new String(rawData));
     }
 
