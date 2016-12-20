@@ -20,13 +20,13 @@ public class RSACoder  {
      * @return 解密数据
      * @throws Exception
      */
-    public static byte[] decryptByPrivateKey(byte[] data,byte[] key)throws Exception{
-        PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(key); //获取私钥
+    public static String decryptByPrivateKey(String data,String key)throws Exception{
+        PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(CodeType.s2b(key)); //获取私钥
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         PrivateKey privateKey = keyFactory.generatePrivate(pkcs8EncodedKeySpec);   //生成私钥
         Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());  //对数据解密
         cipher.init(Cipher.DECRYPT_MODE,privateKey);
-        return cipher.doFinal(data);
+        return new String(cipher.doFinal(CodeType.s2b(data)));
     }
 
     /**
@@ -36,13 +36,13 @@ public class RSACoder  {
      * @return 加密数据
      * @throws Exception
      */
-    public static byte[] encryptByPublicKey(byte[] data,byte[] key)throws Exception{
-        X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(key);    //取得公钥
+    public static String encryptByPublicKey(String data,String key)throws Exception{
+        X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(CodeType.s2b(key));    //取得公钥
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         PublicKey publicKey = keyFactory.generatePublic(x509EncodedKeySpec);
         Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());  //加密数据
         cipher.init(Cipher.ENCRYPT_MODE,publicKey);
-        return cipher.doFinal(data);
+        return CodeType.b2s(cipher.doFinal(data.getBytes()));
     }
 
     /**
@@ -51,9 +51,9 @@ public class RSACoder  {
      * @return 私钥
      * @throws Exception
      */
-    public static byte[] getPrivateKey(Map<String,Object> keyMap)throws Exception{
-        Key key = (Key) keyMap.get("private");
-        return key.getEncoded();
+    public static String getPrivateKey(Map<String,String> keyMap)throws Exception{
+        String key = keyMap.get("private");
+        return key;
     }
 
     /**
@@ -62,9 +62,9 @@ public class RSACoder  {
      * @return 公钥
      * @throws Exception
      */
-    public static byte[] getPublicKey(Map<String,Object> keyMap)throws Exception{
-        Key key = (Key) keyMap.get("public");
-        return key.getEncoded();
+    public static String getPublicKey(Map<String,String> keyMap)throws Exception{
+        String key = keyMap.get("public");
+        return key;
     }
 
     /**
@@ -72,15 +72,15 @@ public class RSACoder  {
      * @return 秘钥Map
      * @throws Exception
      */
-    public static Map<String,Object> initKey() throws Exception{
+    public static Map<String,String> initKey() throws Exception{
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");    //实例化秘钥对生成器
         keyPairGenerator.initialize(1024);   //秘钥对生成器初始化
         KeyPair keyPair = keyPairGenerator.generateKeyPair();   //生成秘钥对
         RSAPublicKey publicKey = (RSAPublicKey)keyPair.getPublic(); //获取公钥
         RSAPrivateKey privateKey = (RSAPrivateKey)keyPair.getPrivate(); //获取私钥
-        Map<String,Object> keyMap = new HashMap<>(2);   //存入map
-        keyMap.put("private",privateKey);
-        keyMap.put("public",publicKey);
+        Map<String,String> keyMap = new HashMap<>(2);   //存入map
+        keyMap.put("private",CodeType.b2s(privateKey.getEncoded()));
+        keyMap.put("public",CodeType.b2s(publicKey.getEncoded()));
         return keyMap;
     }
 }

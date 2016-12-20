@@ -18,14 +18,14 @@ public class RSASign {
      * @return byte[] 数字签名
      * @throws Exception
      */
-    public static byte[] sign(byte[] data,byte[] privateKey) throws Exception{
-        PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(privateKey);  //转换私钥
+    public static String sign(String data,String privateKey) throws Exception{
+        PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(CodeType.s2b(privateKey));  //转换私钥
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");   //实例化秘钥工厂
         PrivateKey priKey = keyFactory.generatePrivate(pkcs8EncodedKeySpec);    //取得私钥
         Signature signature = Signature.getInstance("MD5withRSA");
         signature.initSign(priKey); // 初始化Signture
-        signature.update(data);     //更新
-        return signature.sign();    //签名
+        signature.update(data.getBytes());     //更新
+        return CodeType.b2s(signature.sign());    //签名
     }
 
     /**
@@ -36,14 +36,14 @@ public class RSASign {
      * @return 校验成功判断
      * @throws Exception
      */
-    public static boolean vertify(byte[] data, byte[] publickey,byte[] sign) throws Exception{
-        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publickey); //转换公钥材料
+    public static boolean vertify(String data, String publickey,String sign) throws Exception{
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(CodeType.s2b(publickey)); //转换公钥材料
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");  //实例化工厂
         PublicKey pubKey = keyFactory.generatePublic(keySpec);  // 生成公钥
         Signature signature = Signature.getInstance("MD5withRSA");  //实例化Signature
         signature.initVerify(pubKey);
-        signature.update(data);
-        return signature.verify(sign);
+        signature.update(data.getBytes());
+        return signature.verify(CodeType.s2b(sign));
 
     }
 
@@ -53,9 +53,9 @@ public class RSASign {
      * @return 私钥
      * @throws Exception
      */
-    public static byte[] getPrivateKey(Map<String,Object> keyMap) throws Exception{
-        Key key = (Key) keyMap.get("Private Key");
-        return key.getEncoded();
+    public static String getPrivateKey(Map<String,String> keyMap) throws Exception{
+        String key =  keyMap.get("Private Key");
+        return key;
     }
 
     /**
@@ -64,9 +64,9 @@ public class RSASign {
      * @return 公钥
      * @throws Exception
      */
-    public static byte[] getPublicKey(Map<String,Object> keyMap)throws Exception{
-        Key key = (Key) keyMap.get("Public Key");
-        return key.getEncoded();
+    public static String getPublicKey(Map<String,String> keyMap)throws Exception{
+        String key = keyMap.get("Public Key");
+        return key;
     }
 
     /**
@@ -74,15 +74,15 @@ public class RSASign {
      * @return 密钥map
      * @throws Exception
      */
-    public static Map<String,Object> initKey() throws Exception{
+    public static Map<String,String> initKey() throws Exception{
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         keyPairGenerator.initialize(1024);
         KeyPair keyPair=keyPairGenerator.generateKeyPair();
         RSAPublicKey publicKey = (RSAPublicKey)keyPair.getPublic();
         RSAPrivateKey privateKey = (RSAPrivateKey)keyPair.getPrivate();
-        Map<String,Object> keyMap = new HashMap<>(2);
-        keyMap.put("Public Key",publicKey);
-        keyMap.put("Private Key",privateKey);
+        Map<String,String> keyMap = new HashMap<>(2);
+        keyMap.put("Public Key",CodeType.b2s(publicKey.getEncoded()));
+        keyMap.put("Private Key",CodeType.b2s(privateKey.getEncoded()));
         return keyMap;
     }
 }

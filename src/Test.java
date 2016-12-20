@@ -34,20 +34,19 @@ public class Test {
      */
     @org.junit.Test
     public void RSASignTest()throws Exception{
-         byte[] privateKey;
-         byte[] publicKey;
+         String privateKey;
+         String publicKey;
 
-        Map<String,Object> keyMap = RSASign.initKey();
+        Map<String,String> keyMap = RSASign.initKey();
         privateKey = RSASign.getPrivateKey(keyMap);
         publicKey=RSASign.getPublicKey(keyMap);
-        System.out.println("私钥：\n"+ new BASE64Encoder().encode(privateKey));
-        System.out.println("公钥：\n"+new BASE64Encoder().encode(publicKey));
+        System.out.println("私钥：\n"+ privateKey);
+        System.out.println("公钥：\n"+publicKey);
 
         String test = "这是要签名的一句话。";
-        byte[] byteTest=test.getBytes();
-        byte[] sign = RSASign.sign(byteTest,privateKey);
-        System.out.println("签名：\n"+new BASE64Encoder().encode(sign));
-        System.out.println("状态：\n"+RSASign.vertify(byteTest,publicKey,sign));
+        String sign = RSASign.sign(test,privateKey);
+        System.out.println("签名：\n"+sign);
+        System.out.println("状态：\n"+RSASign.vertify(test,publicKey,sign));
     }
 
     /**
@@ -56,22 +55,21 @@ public class Test {
      */
     @org.junit.Test
     public void RSATest() throws Exception{
-        byte[] privateKey;
-        byte[] publicKey;
-        Map<String,Object> keyMap = RSACoder.initKey();
+        String privateKey;
+        String publicKey;
+        Map<String,String> keyMap = RSACoder.initKey();
         privateKey = RSACoder.getPrivateKey(keyMap);
         publicKey=RSACoder.getPublicKey(keyMap);
-        System.out.println("公钥：\n"+ new BASE64Encoder().encode(publicKey));
-        System.out.println("私钥：\n"+ new BASE64Encoder().encode(privateKey));
+        System.out.println("公钥：\n"+ publicKey);
+        System.out.println("私钥：\n"+ privateKey);
 
-        String string="待加密数据";
-        byte[] data = string.getBytes();
-        System.out.println("原始数据："+string);
-        byte[] encodeData = RSACoder.encryptByPublicKey(data,publicKey);
-        System.out.println("加密后：\n"+ new BASE64Encoder().encode(encodeData));
-        byte[] decodeData = RSACoder.decryptByPrivateKey(encodeData,privateKey);
-        System.out.println("解密后：\n"+new BASE64Encoder().encode(decodeData));
-        System.out.println("解密后数据：\n"+new String(decodeData));
+        String data="这里这里在这里";
+        System.out.println("原始数据："+data);
+        String encodeData = RSACoder.encryptByPublicKey(data,publicKey);
+        System.out.println("加密后：\n"+ encodeData);
+        String decodeData = RSACoder.decryptByPrivateKey(encodeData,privateKey);
+        System.out.println("解密后：\n"+decodeData);
+        System.out.println("解密后数据：\n"+decodeData);
     }
 
     /**
@@ -85,12 +83,12 @@ public class Test {
         String publicKey=ECIESCoder.initKey();
         String cryptData = ECIESCoder.encrypt(test,publicKey);
         String privateKey=ECIESCoder.map.get(publicKey);
-        byte[] rawData = ECIESCoder.decrypt(cryptData,privateKey);
+        String rawData = ECIESCoder.decrypt(cryptData,privateKey);
         System.out.println("原始数据：\n"+test);
         System.out.println("加密数据：\n"+cryptData);
         System.out.println("私钥：\n"+ privateKey);
         System.out.println("公钥：\n"+ publicKey);
-        System.out.println("解密后数据：\n"+new String(rawData));
+        System.out.println("解密后数据：\n"+rawData);
     }
 
 

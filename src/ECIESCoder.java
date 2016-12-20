@@ -45,10 +45,9 @@ public static Map<String,String> map = new HashMap<>(2);
         privateKey = ecPrivateKey.getEncoded();
 
 
-        ECIESCoder.map.put(new BASE64Encoder().encodeBuffer(publicKey),new BASE64Encoder().encodeBuffer(privateKey));  //<公钥，私钥>放入秘钥池
+        ECIESCoder.map.put(CodeType.b2s(publicKey),CodeType.b2s(privateKey));  //<公钥，私钥>放入秘钥池
 //        ECIESCoder.map.put("private",new BASE64Encoder().encodeBuffer(privateKey));  //<公钥，私钥>放入秘钥池
-        String pub = new BASE64Encoder().encodeBuffer(publicKey);
-        return pub;
+        return CodeType.b2s(publicKey);
 //        return publicKey;
     }
 
@@ -63,7 +62,7 @@ public static Map<String,String> map = new HashMap<>(2);
     public static String encrypt(String data, String pubKey) throws Exception {
         byte[] cipherText = null;
 //        转换公钥
-        byte[] key=new BASE64Decoder().decodeBuffer( pubKey);
+        byte[] key=CodeType.s2b(pubKey);
         X509EncodedKeySpec spec = new X509EncodedKeySpec(key);
         KeyFactory factory = KeyFactory.getInstance("ECDH");
 //        生成公钥
@@ -72,7 +71,7 @@ public static Map<String,String> map = new HashMap<>(2);
         Cipher cipher = Cipher.getInstance("ECIES", BouncyCastleProvider.PROVIDER_NAME);
         cipher.init(Cipher.ENCRYPT_MODE, publicKey);
         cipherText = cipher.doFinal(data.getBytes());
-        return new BASE64Encoder().encodeBuffer(cipherText);
+        return CodeType.b2s(cipherText);
     }
 
     /**
@@ -83,10 +82,10 @@ public static Map<String,String> map = new HashMap<>(2);
      * @return 原文字节流
      * @throws Exception
      */
-    public static byte[] decrypt(String strData, String priKey) throws Exception {
+    public static String decrypt(String strData, String priKey) throws Exception {
         byte[] transData = null;
-        byte[] data=new BASE64Decoder().decodeBuffer(strData);
-        byte[] key=new BASE64Decoder().decodeBuffer(priKey);
+        byte[] data=CodeType.s2b(strData);
+        byte[] key=CodeType.s2b(priKey);
 //        转换私钥
         PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(key);
         KeyFactory factory = KeyFactory.getInstance("ECDH");
@@ -97,6 +96,6 @@ public static Map<String,String> map = new HashMap<>(2);
         cipher.init(Cipher.DECRYPT_MODE,privateKey);
         transData = cipher.doFinal(data);
 
-        return transData;
+        return new String(transData);
     }
 }
