@@ -11,6 +11,7 @@
 - RSA签名
 - ECIES非对称加密
 - DSA签名
+- ECDSA签名
 
 ### 所需库
 - Bouncy Castle
