@@ -16,15 +16,14 @@ public class Test {
     @org.junit.Test
     public void AEStest() throws Exception{
         String data="11111111111111AES";
-        byte[] byteData=data.getBytes();
-        byte[] key = AESCoder.initKey();
-        System.out.println("密钥："+ new BASE64Encoder().encode(key));
+        String key = AESCoder.initKey();
+        System.out.println("密钥："+ key);
 
-        byteData = AESCoder.encrypt(byteData,key);
-        System.out.println("加密后："+new BASE64Encoder().encode(byteData));
+        data = AESCoder.encrypt(data,key);
+        System.out.println("加密后："+data);
 
-        byteData = AESCoder.decrypt(byteData,key);
-        data = new String(byteData);
+        data = AESCoder.decrypt(data,key);
+        data = new String(data);
         System.out.println("解密后："+data);
     }
 

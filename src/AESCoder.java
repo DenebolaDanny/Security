@@ -9,29 +9,32 @@ import java.security.NoSuchAlgorithmException;
  */
 public class AESCoder {
 
-    public static Key toKey(byte[] b){
-        SecretKey secretKey = new SecretKeySpec(b,"AES");
+    public static Key toKey(String b) throws Exception  {
+        SecretKey secretKey = new SecretKeySpec(CodeType.s2b(b),"AES");
         return (secretKey);
     }
 
-    public static byte[] decrypt(byte[] data,byte[] key) throws Exception {
+    public static String decrypt(String data,String key) throws Exception {
         Key k = toKey(key);
         Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
         cipher.init(Cipher.DECRYPT_MODE,k);
-        return (cipher.doFinal(data));
+        byte[] rawData = cipher.doFinal(CodeType.s2b(data));
+        return new String(rawData);
     }
 
-    public static byte[] encrypt(byte[] data,byte[] key) throws Exception {
+    public static String encrypt(String data,String key) throws Exception {
         Key k = toKey(key);
         Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
         cipher.init(Cipher.ENCRYPT_MODE,k);
-        return (cipher.doFinal(data));
+        byte[] cryptText = cipher.doFinal(data.getBytes());
+        return CodeType.b2s(cryptText);
     }
 
-    public static byte[] initKey() throws  Exception{
+    public static String initKey() throws  Exception{
         KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
         keyGenerator.init(128); //128/192/256
         SecretKey secretKey = keyGenerator.generateKey();
-        return secretKey.getEncoded();
+        byte[] key = secretKey.getEncoded();
+        return CodeType.b2s(key);
     }
 }
