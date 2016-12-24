@@ -107,5 +107,16 @@ public class Test {
         System.out.println("状态\n" + status);
     }
 
-
+    @org.junit.Test
+    public void ECDSATest() throws Exception {
+        String str = "ECDSA数字签名";
+        ECDSACoder ecdsaCoder = new ECDSACoder();
+        ecdsaCoder.init();
+        String sign = ecdsaCoder.sign(str, ecdsaCoder.getPrivateKey());
+        boolean status = ecdsaCoder.vertify(str, ecdsaCoder.getPublicKey(), sign);
+        System.out.println("公钥：\n" + ecdsaCoder.getPublicKey());
+        System.out.println("私钥：\n" + ecdsaCoder.getPrivateKey());
+        System.out.println("签名：\n" + sign);
+        System.out.println("状态\n" + status);
+    }
 }
